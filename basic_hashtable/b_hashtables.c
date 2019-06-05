@@ -70,8 +70,9 @@ unsigned int hash(char *str, int max)
  ****/
 BasicHashTable *create_hash_table(int capacity)
 {
-  BasicHashTable *ht;
-
+  BasicHashTable *ht = malloc(sizeof(BasicHashTable));
+  ht->storage= calloc(capacity, sizeof(Pair *));
+  ht->capacity = capacity;
   return ht;
 }
 
@@ -84,7 +85,12 @@ BasicHashTable *create_hash_table(int capacity)
  ****/
 void hash_table_insert(BasicHashTable *ht, char *key, char *value)
 {
-
+  // Create an index
+  int index = hash(key, ht->capacity);
+  // Create a pair
+  Pair *pair = create_pair(key, value);
+  // Assign storage index to pair(point the index to our array key-value)
+  ht->storage[index] = pair;
 }
 
 /****
@@ -104,7 +110,23 @@ void hash_table_remove(BasicHashTable *ht, char *key)
  ****/
 char *hash_table_retrieve(BasicHashTable *ht, char *key)
 {
-  return NULL;
+  // set new index to hash the key
+  int new_index = hash(key, ht->capacity);
+  // look at ht->storage[index] != Null
+  if(ht->storage[new_index]!=NULL){
+    if(strcmp(ht->storage[new_index]->key, key) == 0){
+      printf("Key is %s\n", ht->storage[new_index]->value);
+    }
+    else{
+      return NULL;
+    }
+  }
+  else{
+      return NULL;
+    }
+  // strcmp -ht->storage->key and the stored key we then return the key.
+
+  
 }
 
 /****
