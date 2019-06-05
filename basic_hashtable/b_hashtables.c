@@ -100,7 +100,14 @@ void hash_table_insert(BasicHashTable *ht, char *key, char *value)
  ****/
 void hash_table_remove(BasicHashTable *ht, char *key)
 {
-
+  // find index
+  int index = hash(key, ht->capacity);
+  // search storage for key, destroy! 
+  if(ht->storage[index] !=NULL && strcmp(ht->storage[index]->key, key) == 0){
+    // destroy 
+    destroy_pair(ht->storage[index]);
+    ht->storage[index] = NULL;
+  }
 }
 
 /****
@@ -109,25 +116,23 @@ void hash_table_remove(BasicHashTable *ht, char *key)
   Should return NULL if the key is not found.
  ****/
 char *hash_table_retrieve(BasicHashTable *ht, char *key)
-{
-  // set new index to hash the key
-  int new_index = hash(key, ht->capacity);
-  // look at ht->storage[index] != Null
-  if(ht->storage[new_index]!=NULL){
-    if(strcmp(ht->storage[new_index]->key, key) == 0){
-      printf("Key is %s\n", ht->storage[new_index]->value);
+  {
+    // set new index to hash the key
+  int index = hash(key, ht->capacity);
+// look at ht->storage[index] != Null
+  if (ht->storage[index] != NULL) {
+    // strcmp -ht->storage->key and the stored key we then return the key.
+    if (strcmp(ht->storage[index]->key, key) == 0 ) {
+      return ht->storage[index]->value;
     }
     else{
       return NULL;
     }
+  }else{
+    return NULL;
   }
-  else{
-      return NULL;
-    }
-  // strcmp -ht->storage->key and the stored key we then return the key.
-
-  
 }
+  
 
 /****
   Fill this in.
@@ -136,7 +141,20 @@ char *hash_table_retrieve(BasicHashTable *ht, char *key)
  ****/
 void destroy_hash_table(BasicHashTable *ht)
 {
-
+if (ht->storage != NULL) {
+  //Free each pair in storage
+    for (int i = 0; i < ht->capacity; i++) {
+      if (ht->storage[i] != NULL ) {
+        destroy_pair(ht->storage[i]);
+      }
+    }
+    // Free Storage
+    free(ht->storage);
+  }
+  // Free HT
+  if(ht != NULL){
+    free(ht);
+  }
 }
 
 
