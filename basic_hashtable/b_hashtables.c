@@ -86,10 +86,17 @@ BasicHashTable *create_hash_table(int capacity)
 void hash_table_insert(BasicHashTable *ht, char *key, char *value)
 {
   // Create an index
-  int index = hash(key, ht->capacity);
+  unsigned int index = hash(key, ht->capacity);
   // Create a pair
   Pair *pair = create_pair(key, value);
   // Assign storage index to pair(point the index to our array key-value)
+  Pair *stored_pair = ht->storage[index];
+  if(stored_pair !=NULL){
+    if(strcmp(key, stored_pair->key!=0)){
+      printf("Warning");
+    }
+    destroy_pair(stored_pair);
+  }
   ht->storage[index] = pair;
 }
 
@@ -103,10 +110,12 @@ void hash_table_remove(BasicHashTable *ht, char *key)
   // find index
   int index = hash(key, ht->capacity);
   // search storage for key, destroy! 
-  if(ht->storage[index] !=NULL && strcmp(ht->storage[index]->key, key) == 0){
+  if(ht->storage[index] != NULL && strcmp(ht->storage[index]->key, key) == 0){
     // destroy 
     destroy_pair(ht->storage[index]);
     ht->storage[index] = NULL;
+  } else{
+    printf( "unable to remove entery with key: %s\n", key);
   }
 }
 
