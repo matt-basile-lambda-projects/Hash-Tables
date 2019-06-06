@@ -183,7 +183,20 @@ char *hash_table_retrieve(HashTable *ht, char *key)
  */
 void destroy_hash_table(HashTable *ht)
 {
-
+if (ht->storage != NULL) {
+  //Free each pair in storage
+    for (int i = 0; i < ht->capacity; i++) {
+      if (ht->storage[i] != NULL ) {
+        destroy_pair(ht->storage[i]);
+      }
+    }
+    // Free Storage
+    free(ht->storage);
+  }
+  // Free HT
+  if(ht != NULL){
+    free(ht);
+  }
 }
 
 /*
@@ -196,8 +209,8 @@ void destroy_hash_table(HashTable *ht)
  */
 HashTable *hash_table_resize(HashTable *ht)
 {
-  HashTable *new_ht;
-
+  HashTable *new_ht = create_hash_table(ht->capacity * 2);
+  
   return new_ht;
 }
 
