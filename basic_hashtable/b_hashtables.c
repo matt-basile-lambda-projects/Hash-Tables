@@ -70,8 +70,9 @@ unsigned int hash(char *str, int max)
  ****/
 BasicHashTable *create_hash_table(int capacity)
 {
-  BasicHashTable *ht;
-
+  BasicHashTable *ht = malloc(sizeof(BasicHashTable));
+  ht->storage= calloc(capacity, sizeof(Pair *));
+  ht->capacity = capacity;
   return ht;
 }
 
@@ -84,7 +85,19 @@ BasicHashTable *create_hash_table(int capacity)
  ****/
 void hash_table_insert(BasicHashTable *ht, char *key, char *value)
 {
-
+  // Create an index
+  unsigned int index = hash(key, ht->capacity);
+  // Create a pair
+  Pair *pair = create_pair(key, value);
+  // Assign storage index to pair(point the index to our array key-value)
+  Pair *stored_pair = ht->storage[index];
+  if(stored_pair !=NULL){
+    if(strcmp(key, stored_pair->key!=0)){
+      printf("Warning");
+    }
+    destroy_pair(stored_pair);
+  }
+  ht->storage[index] = pair;
 }
 
 /****
@@ -94,7 +107,16 @@ void hash_table_insert(BasicHashTable *ht, char *key, char *value)
  ****/
 void hash_table_remove(BasicHashTable *ht, char *key)
 {
-
+  // find index
+  int index = hash(key, ht->capacity);
+  // search storage for key, destroy! 
+  if(ht->storage[index] != NULL && strcmp(ht->storage[index]->key, key) == 0){
+    // destroy 
+    destroy_pair(ht->storage[index]);
+    ht->storage[index] = NULL;
+  } else{
+    printf( "unable to remove entery with key: %s\n", key);
+  }
 }
 
 /****
@@ -103,9 +125,23 @@ void hash_table_remove(BasicHashTable *ht, char *key)
   Should return NULL if the key is not found.
  ****/
 char *hash_table_retrieve(BasicHashTable *ht, char *key)
-{
-  return NULL;
+  {
+    // set new index to hash the key
+  int index = hash(key, ht->capacity);
+// look at ht->storage[index] != Null
+  if (ht->storage[index] != NULL) {
+    // strcmp -ht->storage->key and the stored key we then return the key.
+    if (strcmp(ht->storage[index]->key, key) == 0 ) {
+      return ht->storage[index]->value;
+    }
+    else{
+      return NULL;
+    }
+  }else{
+    return NULL;
+  }
 }
+  
 
 /****
   Fill this in.
@@ -114,7 +150,20 @@ char *hash_table_retrieve(BasicHashTable *ht, char *key)
  ****/
 void destroy_hash_table(BasicHashTable *ht)
 {
-
+if (ht->storage != NULL) {
+  //Free each pair in storage
+    for (int i = 0; i < ht->capacity; i++) {
+      if (ht->storage[i] != NULL ) {
+        destroy_pair(ht->storage[i]);
+      }
+    }
+    // Free Storage
+    free(ht->storage);
+  }
+  // Free HT
+  if(ht != NULL){
+    free(ht);
+  }
 }
 
 
